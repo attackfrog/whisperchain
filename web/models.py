@@ -6,6 +6,7 @@ class Chain(models.Model):
     length = models.IntegerField()
     currentPosition = models.IntegerField()
     isPublic = models.BooleanField()
+    name = models.CharField(max_length=15)
 
 class Picture(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.SET_DEFAULT, default="[Deleted User]", related_name="pictures")
