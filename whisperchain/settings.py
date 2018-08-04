@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'storages',
+    'web.apps.WebConfig',
 ]
 
 MIDDLEWARE = [
@@ -79,6 +81,19 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# File storage
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html
+# https://docs.djangoproject.com/en/2.1/ref/models/fields/#django.db.models.FileField
+
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+
+MEDIA_ROOT = '/images/'
+MEDIA_URL = 'http://whisperchain.s3-website.us-east-2.amazonaws.com/images/'
 
 
 # Password validation
