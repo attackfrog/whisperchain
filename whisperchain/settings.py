@@ -92,7 +92,7 @@ AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 
-MEDIA_ROOT = '/images/'
+MEDIA_ROOT = '/'
 MEDIA_URL = 'http://whisperchain.s3-website.us-east-2.amazonaws.com/images/'
 
 
