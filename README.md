@@ -1,2 +1,2 @@
-# whisperchain
+# Whisperchain
 A "telephone game" web app.
