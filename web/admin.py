@@ -1,3 +1,7 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Chain, Picture, Phrase
+
+admin.site.register(Chain)
+admin.site.register(Picture)
+admin.site.register(Phrase)

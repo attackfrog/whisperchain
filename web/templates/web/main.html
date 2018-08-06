@@ -1,0 +1,121 @@
+{% extends "web/base.html" %}
+
+{% block title %}
+Play Telephone Online!
+{% endblock %}
+
+{% load filters %}
+{% load mathfilters %}
+
+{% block nav %}
+<ul class="navbar-nav">
+    <li class="nav-item active">
+        <a class="nav-link" href="{% url 'index' %}">Home
+            <span class="sr-only">(current)</span>
+        </a>
+    </li>
+</ul>
+<ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+    </li>
+</ul>
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <div class="row user-chains-box">
+        <div class="col-12">
+            <h2 class="section-header">Your chains in progress</h2>
+
+            {% for chain in user_chains %}
+                <div class="chains-box">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ chain.name }} <a href="#" class="btn btn-outline-primary float-right view-chain-button">View Chain</a></h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                {% for user in chain.users.all %}
+                                {{ user }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </h6>
+                            <div class="progress chain-progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ chain.currentPosition|div:chain.length|mul:100 }}%;" aria-valuenow="{{ chain.currentPosition }}" 
+                                    aria-valuemin="0" aria-valuemax="{{ chain.length }}">{{ chain.currentPosition }}/{{ chain.length }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>You have no chains in progress right now.</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <hr class="section-divider" />
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card action-card">
+                <h5 class="card-header">Start a new chain</h5>
+                <div class="card-body">
+                    <p class="card-text">Make a group anyone can join, or keep it for just you and your friends by requiring an invite code.</p>
+                    <a href="#" class="btn btn-primary btn-block">Create Chain</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+                <div class="card action-card">
+                    <h5 class="card-header">Join a chain by invite code</h5>
+                    <div class="card-body">
+                        <p class="card-text">Have an invite code for a chain? Enter it here to join.</p>
+                        <form action="#" method="post">
+                            {% csrf_token %}
+                            {% for field in form %}
+                                <div class="form-group">
+                                    {{ field|addclass:'form-control' }}
+                                    {{ field.errors }}
+                                </div>
+                            {% endfor %}
+                            <div class="form-group">
+                                <input type="submit" class="btn btn-primary btn-block" value="Join Group" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+    </div>
+    
+    <hr class="section-divider" />
+
+    <div class="row">
+        <div class="col-12">
+            <h2 class="section-header">Public Chains List</h2>
+            {% for chain in public_chains %}
+                <div class="chains-box">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ chain.name }} <a href="#" class="btn btn-outline-primary float-right view-chain-button">Join Chain</a></h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                {% for user in chain.users.all %}
+                                {{ user }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </h6>
+                            <div class="progress chain-progress">
+                                <div class="progress-bar" role="progressbar" style="width: {{ chain.currentPosition|div:chain.length|mul:100 }}%;" aria-valuenow="{{ chain.currentPosition }}" 
+                                    aria-valuemin="0" aria-valuemax="{{ chain.length }}">{{ chain.currentPosition }}/{{ chain.length }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+            <div class="col-12">
+                <p>There are no public chains looking for participants right now. Why don't you start one?</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

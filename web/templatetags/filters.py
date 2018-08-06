@@ -1,4 +1,4 @@
-# Thanks to maciek and Charlesthk for the below: https://stackoverflow.com/a/18962676
+# Thanks to maciek and Charlesthk for class-adding filter: https://stackoverflow.com/a/18962676
 
 from django import template
 

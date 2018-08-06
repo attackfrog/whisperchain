@@ -1,15 +1,26 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect #, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db import IntegrityError
 
-from .forms import LoginForm, SignupForm
+from .models import Chain, Picture, Phrase
+from .forms import LoginForm, SignupForm, ChainCodeForm
+
 
 def index(request):
-    return render(request, "web/welcome.html")
+    if not request.user.is_authenticated:
+        return render(request, "web/welcome.html")
+    else:
+        context = {
+            "form": ChainCodeForm(),
+            "user_chains": Chain.objects.filter(users__username=request.user.username), # pylint: disable=no-member
+            "public_chains": Chain.objects.filter(isPublic=True) # pylint: disable=no-member
+        }
+        return render(request, "web/main.html", context)
+
 
 def login_view(request):
     if request.method == "POST":
@@ -29,10 +40,12 @@ def login_view(request):
     else:
         return render(request, "web/login.html", {"form": LoginForm()})
 
+
 def logout_view(request):
     logout(request)
     messages.add_message(request, messages.INFO, "You successfully logged out.")
     return HttpResponseRedirect(reverse("index"))
+
 
 def signup(request):
     if request.method == "POST":
@@ -64,3 +77,7 @@ def signup(request):
     else:
         form = SignupForm()
         return render(request, "web/signup.html", {"form": form})
+
+
+def profile(request):
+    return HttpResponse("User profile goes here.")
