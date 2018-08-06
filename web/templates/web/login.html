@@ -1,5 +1,7 @@
 {% extends "web/base.html" %}
 
+{% load filters %}
+
 {% block title %}
 Log In
 {% endblock %}
@@ -26,8 +28,20 @@ Log In
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-8 col-md-6 col-lg-5">
-            <h2>Log In</h2>
-            <p>Insert login form here.</p>
+            <form action="{% url 'login' %}" method="post" id="login-form">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field|addclass:'form-control' }}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary" value="Login" />
+                </div>
+            </form>
+            <p>Don't have an account yet? <a href="{% url 'signup' %}" title="Sign up for Whisperchain">Sign up!</a></p>
         </div>
     </div>
 </div>
