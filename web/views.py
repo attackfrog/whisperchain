@@ -27,11 +27,7 @@ def login_view(request):
             return HttpResponseRedirect(reverse("login"))
     
     else:
-        context = {
-            "form": LoginForm(),
-            "messages": messages.get_messages(request)
-        }
-        return render(request, "web/login.html", context)
+        return render(request, "web/login.html", {"form": LoginForm()})
 
 def logout_view(request):
     logout(request)
