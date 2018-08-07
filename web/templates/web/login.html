@@ -37,6 +37,7 @@ Log In
                         {{ field.errors }}
                     </div>
                 {% endfor %}
+                {{ form.non_field_errors }}
                 <div class="form-group">
                     <input type="submit" class="btn btn-primary btn-block" value="Login" />
                 </div>

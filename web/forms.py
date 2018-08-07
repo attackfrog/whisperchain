@@ -1,26 +1,41 @@
 from django import forms
+from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
 
-from .models import Chain, MAX_CHAIN_NAME_LENGTH, CHAIN_CODE_LENGTH, MAX_USERS_PER_CHAIN
+from .models import Chain
 
-MIN_PASSWORD_LENGTH = 8
+class LoginForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ["username", "password"]
+        widgets = {
+            "password": forms.PasswordInput()
+        }
 
-class LoginForm(forms.Form):
-    username = forms.CharField(label="Username", max_length=MAX_CHAIN_NAME_LENGTH)
-    password = forms.CharField(label="Password", widget=forms.PasswordInput())
+class SignupForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ["username", "email", "password"]
+        widgets = {
+            "password": forms.PasswordInput()
+        }
+    passconfirm = forms.CharField(label="Confirm Password", widget=forms.PasswordInput())
 
-class SignupForm(forms.Form):
-    username = forms.CharField(label="Username", max_length=MAX_CHAIN_NAME_LENGTH)
-    email = forms.EmailField(label="Email")
-    password = forms.CharField(label="Password", widget=forms.PasswordInput(), min_length=MIN_PASSWORD_LENGTH)
-    passconfirm = forms.CharField(label="Confirm Password", widget=forms.PasswordInput(), min_length=MIN_PASSWORD_LENGTH)
+    # the below thanks to https://stackoverflow.com/a/34837887
+    def clean(self):
+        clean_data = super(SignupForm, self).clean()
+        password = clean_data.get("password")
+        passconfirm = clean_data.get("passconfirm")
+        username = clean_data.get("username")
 
-class ChainCodeForm(forms.Form):
-    code = forms.CharField(label="Code", max_length=CHAIN_CODE_LENGTH)
+        validate_password(password, user=username)
+        if password != passconfirm:
+            raise forms.ValidationError("Those passwords did not match.")
 
-class OldChainForm(forms.Form):
-    name = forms.CharField(label="Name", max_length=MAX_CHAIN_NAME_LENGTH)
-    maxUsers = forms.IntegerField(label="Maximum Users in Chain", max_value=MAX_USERS_PER_CHAIN)
-    isPublic = forms.BooleanField(label="Make Chain Public", required=False)
+class ChainCodeForm(forms.ModelForm):
+    class Meta:
+        model = Chain
+        fields = ["code"]
 
 class NewChainForm(forms.ModelForm):
     class Meta:

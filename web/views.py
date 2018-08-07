@@ -54,25 +54,11 @@ def signup(request):
     if request.method == "POST":
         form = SignupForm(request.POST)
         if form.is_valid():
-            if not request.POST["password"] == request.POST["passconfirm"]:
-                messages.add_message(request, messages.WARNING, "Your passwords didn't match.")
-                form = SignupForm({
-                    "username": request.POST["username"],
-                    "email": request.POST["email"]
-                    })
-                return render(request, "web/signup.html", {"form": form})
-            else:
-                try:
-                    user = User.objects.create_user(request.POST["username"], request.POST["email"], request.POST["password"])
-                    user.save()
-                except IntegrityError:
-                    messages.add_message(request, messages.WARNING, "That username is already taken.")
-                    return HttpResponseRedirect(reverse("signup"))
-                
-                login(request, user)
-                messages.add_message(request, messages.SUCCESS, f"You successfully created your account. Welcome to Whisperchain, {request.POST['username']}!")
-                return HttpResponseRedirect(reverse("index"))
-
+            user = User.objects.create_user(request.POST["username"], request.POST["email"], request.POST["password"])
+            user.save()
+            login(request, user)
+            messages.add_message(request, messages.SUCCESS, f"You successfully created your account. Welcome to Whisperchain, {request.POST['username']}!")
+            return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "web/signup.html", {"form": form})
 
