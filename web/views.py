@@ -37,8 +37,7 @@ def login_view(request):
                 messages.add_message(request, messages.WARNING, "The username and/or password you entered was invalid.")
                 return HttpResponseRedirect(reverse("login"))
         else:
-            messages.add_message(request, messages.WARNING, "Please provide both a username and a password.")
-            return HttpResponseRedirect(reverse("login"))
+            return render(request, "web/login.html", {"form": form})
     
     else:
         return render(request, "web/login.html", {"form": LoginForm()})
