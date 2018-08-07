@@ -3,7 +3,7 @@
 {% load filters %}
 
 {% block title %}
-Sign Up
+Create New Chain
 {% endblock %}
 
 {% block nav %}
@@ -11,15 +11,18 @@ Sign Up
     <li class="nav-item">
         <a class="nav-link" href="{% url 'index' %}">Home</a>
     </li>
+    <li class="nav-item active">
+        <a class="nav-link" href="{% url 'create' %}">Create New Chain
+            <span class="sr-only">(current)</span>
+        </a>
+    </li>
 </ul>
 <ul class="navbar-nav ml-auto">
     <li class="nav-item">
-        <a class="nav-link" href="{% url 'login' %}">Log In</a>
+        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
     </li>
-    <li class="nav-item active">
-        <a class="nav-link" href="{% url 'signup' %}">Sign Up
-            <span class="sr-only">(current)</span>
-        </a>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
     </li>
 </ul>
 {% endblock %}
@@ -27,8 +30,8 @@ Sign Up
 {% block main %}
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-8 col-md-6 col-lg-5">
-            <form action="{% url 'signup' %}" method="post" id="signup-form">
+        <div class="col-10 col-md-8 col-lg-7">
+            <form action="{% url 'create' %}" method="post" id="create-form">
                 {% csrf_token %}
                 {% for field in form %}
                     <div class="form-group">
@@ -38,10 +41,9 @@ Sign Up
                     </div>
                 {% endfor %}
                 <div class="form-group">
-                    <input type="submit" class="btn btn-primary btn-block" value="Sign Up" />
+                    <input type="submit" class="btn btn-primary btn-block" value="Create Chain" />
                 </div>
             </form>
-            <p>Already have an account? <a href="{% url 'login' %}" title="Log in to Whisperchain">Log In!</a></p>
         </div>
     </div>
 </div>

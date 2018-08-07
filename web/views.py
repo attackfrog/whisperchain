@@ -6,8 +6,11 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.db import IntegrityError
 
-from .models import Chain, Picture, Phrase
-from .forms import LoginForm, SignupForm, ChainCodeForm
+from hashlib import blake2b
+from datetime import datetime
+
+from .models import Chain, Picture, Phrase, CHAIN_CODE_LENGTH
+from .forms import LoginForm, SignupForm, ChainCodeForm, NewChainForm
 
 
 def index(request):
@@ -17,7 +20,7 @@ def index(request):
         context = {
             "form": ChainCodeForm(),
             "user_chains": Chain.objects.filter(users__username=request.user.username), # pylint: disable=no-member
-            "public_chains": Chain.objects.filter(isPublic=True) # pylint: disable=no-member
+            "public_chains": Chain.objects.filter(isPublic=True).filter(isOpen=True) # pylint: disable=no-member
         }
         return render(request, "web/main.html", context)
 
@@ -71,12 +74,10 @@ def signup(request):
                 return HttpResponseRedirect(reverse("index"))
 
         else:
-            messages.add_message(request, messages.WARNING, "Please fill out all of the fields.")
             return render(request, "web/signup.html", {"form": form})
 
     else:
-        form = SignupForm()
-        return render(request, "web/signup.html", {"form": form})
+        return render(request, "web/signup.html", {"form": SignupForm()})
 
 
 def profile(request):
@@ -93,4 +94,23 @@ def chain(request, code):
         return HttpResponse(f"There is no chain that with the code {code}.")
 
     return HttpResponse(f"Chain display goes here. Code was {code}.")
+
+
+def create(request):
+    if request.method == "POST":
+        form = NewChainForm(request.POST)
+        if form.is_valid():
+            name = request.POST["name"]
+            maxUsers = request.POST["maxUsers"]
+            isPublic = "isPublic" in request.POST and request.POST["isPublic"] == "on"
+            code = blake2b(str.encode(name + datetime.now().isoformat()), digest_size=int(CHAIN_CODE_LENGTH/2)).hexdigest() # pylint: disable=unexpected-keyword-arg
+            chain = Chain(name=name, code=code, maxUsers=maxUsers, isPublic=isPublic)
+            chain.save()
+            return HttpResponseRedirect(f"chain/{code}")
+
+        else:
+            return render(request, "web/create.html", {"form": form})
+
+    else:
+        return render(request, "web/create.html", {"form": NewChainForm()})
     

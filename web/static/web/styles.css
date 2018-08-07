@@ -11,7 +11,8 @@ main {
 }
 
 #login-form,
-#signup-form {
+#signup-form,
+#create-form {
     margin-top: 2rem;
 }
 
