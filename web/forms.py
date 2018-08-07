@@ -12,3 +12,8 @@ class SignupForm(forms.Form):
 
 class ChainCodeForm(forms.Form):
     code = forms.CharField(label="Code", max_length=6)
+
+class NewChainForm(forms.Form):
+    name = forms.CharField(label="Name", max_length=20)
+    maxUsers = forms.IntegerField(label="Maximum Users in Chain", max_value=10)
+    isPublic = forms.BooleanField(label="Make Chain Public")

@@ -3,10 +3,12 @@ from django.contrib.auth import get_user_model
 
 class Chain(models.Model):
     users = models.ManyToManyField(get_user_model(), related_name="chains")
+    maxUsers = models.IntegerField()
+    isOpen = models.BooleanField()
     length = models.IntegerField()
     currentPosition = models.IntegerField()
     isPublic = models.BooleanField()
-    name = models.CharField(max_length=15)
+    name = models.CharField(max_length=20)
     code = models.CharField(max_length=6, unique=True)
 
     def __str__(self):

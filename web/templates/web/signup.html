@@ -28,20 +28,20 @@ Sign Up
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-8 col-md-6 col-lg-5">
-                <form action="{% url 'signup' %}" method="post" id="signup-form">
-                        {% csrf_token %}
-                        {% for field in form %}
-                            <div class="form-group">
-                                {{ field.label_tag }}
-                                {{ field|addclass:'form-control' }}
-                                {{ field.errors }}
-                            </div>
-                        {% endfor %}
-                        <div class="form-group">
-                            <input type="submit" class="btn btn-primary" value="Sign Up" />
-                        </div>
-                    </form>
-                    <p>Already have an account? <a href="{% url 'login' %}" title="Log in to Whisperchain">Log In!</a></p>
+            <form action="{% url 'signup' %}" method="post" id="signup-form">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field.label_tag }}
+                        {{ field|addclass:'form-control' }}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary" value="Sign Up" />
+                </div>
+            </form>
+            <p>Already have an account? <a href="{% url 'login' %}" title="Log in to Whisperchain">Log In!</a></p>
         </div>
     </div>
 </div>

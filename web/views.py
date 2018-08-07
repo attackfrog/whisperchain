@@ -81,3 +81,16 @@ def signup(request):
 
 def profile(request):
     return HttpResponse("User profile goes here.")
+
+
+def chain(request, code):
+    if not len(code) == 6 or not code.isalnum():
+        return HttpResponse(f"{code} is not a valid code.")
+    
+    try:
+        chain = Chain.objects.get(code=code) # pylint: disable=no-member
+    except Chain.DoesNotExist: # pylint: disable=no-member
+        return HttpResponse(f"There is no chain that with the code {code}.")
+
+    return HttpResponse(f"Chain display goes here. Code was {code}.")
+    
