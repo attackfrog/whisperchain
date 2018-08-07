@@ -4,13 +4,9 @@ from django.contrib.auth.password_validation import validate_password
 
 from .models import Chain
 
-class LoginForm(forms.ModelForm):
-    class Meta:
-        model = get_user_model()
-        fields = ["username", "password"]
-        widgets = {
-            "password": forms.PasswordInput()
-        }
+class LoginForm(forms.Form):
+    username = forms.CharField(label="Username")
+    password = forms.CharField(label="Password", widget=forms.PasswordInput())
 
 class SignupForm(forms.ModelForm):
     class Meta:
