@@ -93,10 +93,14 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_AUTO_CREATE_BUCKET = True
+AWS_STORAGE_BUCKET_NAME = 'whisperchain'
+AWS_S3_REGION_NAME = 'us-east-2'
+AWS_S3_SIGNATURE_VERSION = 's3v4'
+S3_USE_SIGV4 = True
 
 MEDIA_ROOT = '/'
-MEDIA_URL = 'http://whisperchain.s3-website.us-east-2.amazonaws.com/images/'
+MEDIA_URL = 'https://s3.us-east-2.amazonaws.com/whisperchain/images/'
 
 
 # Password validation

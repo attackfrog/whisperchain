@@ -58,9 +58,19 @@ main {
 
 /* Chain page stuff */
 
+.chain-progress-box {
+    padding: 1rem 2rem 2rem;
+}
+
 .phrase-card,
-.picture-card {
+.picture-card,
+.submit-card {
     margin: 0 1rem 0;
+}
+
+.picture-card {
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .blockquote {
@@ -72,4 +82,9 @@ main {
     width: 1px;
     background: rgba(0,0,0,.1);
     margin: auto;
+}
+
+.phrase-input {
+    font-size: 1.25rem;
+    height: 5rem!important;
 }

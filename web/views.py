@@ -9,7 +9,8 @@ from hashlib import blake2b
 from datetime import datetime
 
 from .models import Chain, Picture, Phrase, CHAIN_CODE_LENGTH
-from .forms import LoginForm, SignupForm, ChainCodeForm, NewChainForm
+from .forms import LoginForm, SignupForm, ChainCodeForm, NewChainForm, SubmitPhraseForm, SubmitPictureForm
+from .helpers import nextPlayer
 
 
 # Shows the home page to logged in users and a welcome page to logged out visitors
@@ -85,9 +86,25 @@ def chain(request, code):
         messages.add_message(request, messages.WARNING, f"There is no chain with the code {code}.")
         return HttpResponseRedirect(reverse("index"))
 
+    pictures = chain.pictures.all()
+    phrases = chain.phrases.all()
+    submissions = []
+    for i in range(chain.currentPosition):
+        if i % 2 == 0:
+            submissions.append(phrases[int(i/2)])
+        else:
+            submissions.append(pictures[int(i/2)])
+
+    if chain.currentPosition % 2 == 0:
+        form = SubmitPhraseForm()
+    else:
+        form = SubmitPictureForm()
+
     context = {
         "chain": chain,
+        "submissions": submissions,
         "logged_in": request.user.is_authenticated,
+        "form": form,
     }
     return render(request, "web/chain.html", context)
 
@@ -128,16 +145,15 @@ def submit(request, chain_code):
         user = User.objects.get(username=request.user.username)
         chain = Chain.objects.get(code=chain_code) # pylint: disable=no-member
 
-        if "text" in request.POST:    
+        if "text" in request.POST:
             phrase = Phrase(user=user, chain=chain, position=chain.currentPosition, text=request.POST["text"])
             phrase.save()
             
-        elif "data" in request.POST:
-            picture = Picture(user=user, chain=chain, position=chain.currentPosition, data=request.POST["data"])
+        else:
+            picture = Picture(user=user, chain=chain, position=chain.currentPosition, data=request.FILES["data"])
             picture.save()
 
-        chain.currentPosition = chain.currentPosition + 1
+        chain.currentPosition += 1
         chain.save()
     
-    else:
-        return HttpResponseRedirect(reverse("chain", kwargs={"code": chain_code}))
+    return HttpResponseRedirect(reverse("chain", kwargs={"code": chain_code}))

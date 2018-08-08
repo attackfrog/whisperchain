@@ -13,29 +13,29 @@
         <a class="nav-link" href="{% url 'index' %}">Home</a>
     </li>
     {% if logged_in %}
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'create' %}">Create New Chain</a>
-        </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'create' %}">Create New Chain</a>
+    </li>
     {% endif %}
 </ul>
 {% if logged_in %}
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'profile' %}">Profile</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-        </li>
-    </ul>
+<ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+    </li>
+</ul>
 {% else %}
-    <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">Log In</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
-        </li>
-    </ul>
+<ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'login' %}">Log In</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+    </li>
+</ul>
 {% endif %}
 {% endblock %}
 
@@ -43,62 +43,69 @@
 <div class="container">
     <h1>{{ chain.name }}</h1>
     {% if chain.currentPosition < chain.length %}
-    <div class="progress chain-progress">
-        <div class="progress-bar" role="progressbar" style="width: {{ chain.currentPosition|div:chain.length|mul:100 }}%;" aria-valuenow="{{ chain.currentPosition }}" 
-            aria-valuemin="0" aria-valuemax="{{ chain.length }}">{{ chain.currentPosition }}/{{ chain.length }}</div>
+    <div class="chain-progress-box">
+        <div class="progress chain-progress">
+            <div class="progress-bar" role="progressbar" style="width: {{ chain.currentPosition|div:chain.length|mul:100 }}%;" aria-valuenow="{{ chain.currentPosition }}" 
+                aria-valuemin="0" aria-valuemax="{{ chain.length }}">{{ chain.currentPosition }}/{{ chain.length }}</div>
+        </div>
     </div>
     {% endif %}
+    {% for submission in submissions %}
+    {% if submission.text %}
     <div class="card shadow phrase-card">
         <div class="card-body">
             <blockquote class="blockquote">
-                <p>This right here is the silliest phrase you ever did see. Har de har har.</p>
-                <footer class="blockquote-footer">attackfrog</footer>
+                <p>{{ submission.text }}</p>
+                <footer class="blockquote-footer">{{ submission.user }}</footer>
             </blockquote>
         </div>
     </div>
-    <div class="connector"></div>
-    <div class="card shadow picture-card">
-        <img class="card-img-top" src="http://i.imgur.com/05mRPJ9.png" alt="attackfrog's Picture" />
+    {% else %}
+    <div class="card shadow picture-card" style="max-width: {{ submission.data.width }}px;">
+        <img class="card-img-top" src="{{ submission.data.url }}" alt="{{ submission.user }}'s Picture" />
         <div class="card-body">
             <blockquote class="blockquote">
-                <footer class="blockquote-footer">attackfrog</footer>
+                <footer class="blockquote-footer">{{ submission.user }} on {{ submission.timestamp }}</footer>
             </blockquote>
         </div>
     </div>
+    {% endif %}
     <div class="connector"></div>
-    <div class="card shadow phrase-card">
+    {% endfor %}
+    <div class="card shadow submit-card">
         <div class="card-body">
-            <blockquote class="blockquote">
-                <p>This right here is the silliest phrase you ever did see. Har de har har.</p>
-                <footer class="blockquote-footer">attackfrog</footer>
-            </blockquote>
+            {% if chain.currentPosition|divisibleby:2 %}
+            <h5 class="card-title">Your phrase:</h5>
+            <form class="form" action="{% url 'submit' chain_code=chain.code %}" method="POST">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field|addclass:'form-control phrase-input' }}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                {{ form.non_field_errors }}
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary btn-block" value="Submit" />
+                </div>
+            </form>
+            {% else %}
+            <h5 class="card-title">Your picture:</h5>
+            <form class="form" action="{% url 'submit' chain_code=chain.code %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group">
+                        {{ field|addclass:'form-control phrase-input' }}
+                        {{ field.errors }}
+                    </div>
+                {% endfor %}
+                {{ form.non_field_errors }}
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary btn-block" value="Submit" />
+                </div>
+            </form>
+            {% endif %}
         </div>
     </div>
-    <div class="connector"></div>
-    <div class="card shadow picture-card">
-        <img class="card-img-top" src="http://i1285.photobucket.com/albums/a592/AwesomeFish921/Forum%20Game%20Windmill%20Ninja%20Fox_zpsybugeatj.png" alt="attackfrog's Picture" />
-        <div class="card-body">
-            <footer class="blockquote-footer">attackfrog</footer>
-        </div>
-    </div>
-    <div class="connector"></div>
-    <div class="card shadow phrase-card">
-        <div class="card-body">
-            <blockquote class="blockquote">
-                <p>This right here is the silliest phrase you ever did see. Har de har har.</p>
-                <footer class="blockquote-footer">attackfrog</footer>
-            </blockquote>
-        </div>
-    </div>
-    <div class="connector"></div>
-    <div class="card shadow phrase-card">
-        <div class="card-body">
-            <blockquote class="blockquote">
-                <p>This right here is the silliest phrase you ever did see. Har de har har.</p>
-                <footer class="blockquote-footer">attackfrog</footer>
-            </blockquote>
-        </div>
-    </div>
-    <div class="connector"></div>
 </div>
 {% endblock %}

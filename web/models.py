@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+from .helpers import imagePath
+
 MAX_CHAIN_NAME_LENGTH = 20
 CHAIN_CODE_LENGTH = 6 # must be an even number, due to how the hash works
 MAX_USERS_PER_CHAIN = 10
@@ -31,9 +33,9 @@ class Submission(models.Model):
 class Picture(Submission):
     user = models.ForeignKey(get_user_model(), on_delete=models.SET_DEFAULT, default="[Deleted User]", related_name="pictures")
     chain = models.ForeignKey(Chain, on_delete=models.CASCADE, related_name="pictures")
-    height = models.PositiveIntegerField()
-    width = models.PositiveIntegerField()
-    data = models.ImageField(upload_to="images/%Y/%m", height_field="height", width_field="width")
+    height = models.PositiveIntegerField(blank=True, null=True)
+    width = models.PositiveIntegerField(blank=True, null=True)
+    data = models.ImageField(upload_to=imagePath, height_field="height", width_field="width")
 
 class Phrase(Submission):
     user = models.ForeignKey(get_user_model(), on_delete=models.SET_DEFAULT, default="[Deleted User]", related_name="phrases")
