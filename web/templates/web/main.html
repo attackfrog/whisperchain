@@ -65,7 +65,7 @@ Play Telephone Online!
                 <h5 class="card-header">Start a new chain</h5>
                 <div class="card-body">
                     <p class="card-text">Make a group anyone can join, or keep it for just you and your friends by requiring an invite code.</p>
-                    <a href="#" class="btn btn-primary btn-block">Create Chain</a>
+                    <a href="{% url 'create' %}" class="btn btn-primary btn-block">Create Chain</a>
                 </div>
             </div>
         </div>
@@ -74,7 +74,7 @@ Play Telephone Online!
                     <h5 class="card-header">Join a chain by invite code</h5>
                     <div class="card-body">
                         <p class="card-text">Have an invite code for a chain? Enter it here to join.</p>
-                        <form action="#" method="post">
+                        <form action="{% url 'post_chain' %}" method="post">
                             {% csrf_token %}
                             {% for field in form %}
                                 <div class="form-group">

@@ -55,3 +55,21 @@ main {
 .view-chain-button {
     margin-left: 1rem;
 }
+
+/* Chain page stuff */
+
+.phrase-card,
+.picture-card {
+    margin: 0 1rem 0;
+}
+
+.blockquote {
+    margin-bottom: 0;
+}
+
+.connector {
+    height: 4rem;
+    width: 1px;
+    background: rgba(0,0,0,.1);
+    margin: auto;
+}

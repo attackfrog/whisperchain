@@ -33,7 +33,7 @@ def login_view(request):
                 login(request, user)
                 return HttpResponseRedirect(reverse("index"))
             else:
-                messages.add_message(request, messages.WARNING, "The username and/or password you entered was invalid.")
+                messages.add_message(request, messages.ERROR, "The username and/or password you entered was invalid.")
                 return render(request, "web/login.html", {"form": form})
         else:
             return render(request, "web/login.html", {"form": form})
@@ -69,15 +69,28 @@ def profile(request):
 
 
 def chain(request, code):
-    if not len(code) == 6 or not code.isalnum():
-        return HttpResponse(f"{code} is not a valid code.")
+    if not len(code) == CHAIN_CODE_LENGTH or not code.isalnum():
+        messages.add_message(request, messages.WARNING, f"{code} is not a valid code.")
+        return HttpResponseRedirect(reverse("index"))
     
     try:
         chain = Chain.objects.get(code=code) # pylint: disable=no-member
     except Chain.DoesNotExist: # pylint: disable=no-member
-        return HttpResponse(f"There is no chain that with the code {code}.")
+        messages.add_message(request, messages.WARNING, f"There is no chain with the code {code}.")
+        return HttpResponseRedirect(reverse("index"))
 
-    return HttpResponse(f"Chain display goes here. Code was {code}.")
+    context = {
+        "chain": chain,
+        "logged_in": request.user.is_authenticated,
+    }
+    return render(request, "web/chain.html", context)
+
+
+def post_chain(request):
+    if not request.method == "POST":
+        return HttpResponseRedirect(reverse("index"))
+    
+    return HttpResponseRedirect(f"chain/{request.POST['code']}")
 
 
 def create(request):
