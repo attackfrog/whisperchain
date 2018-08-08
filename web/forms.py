@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 
-from .models import Chain
+from .models import Chain, Phrase, Picture
 
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username")
@@ -37,3 +37,13 @@ class NewChainForm(forms.ModelForm):
     class Meta:
         model = Chain
         fields = ["name", "maxUsers", "isPublic"]
+
+class SubmitPhraseForm(forms.ModelForm):
+    class Meta:
+        model = Phrase
+        fields = ["text"]
+
+class SubmitPictureForm(forms.ModelForm):
+    class Meta:
+        model = Picture
+        fields = ["data"]

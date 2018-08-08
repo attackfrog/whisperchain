@@ -31,7 +31,9 @@ class Submission(models.Model):
 class Picture(Submission):
     user = models.ForeignKey(get_user_model(), on_delete=models.SET_DEFAULT, default="[Deleted User]", related_name="pictures")
     chain = models.ForeignKey(Chain, on_delete=models.CASCADE, related_name="pictures")
-    data = models.ImageField(upload_to="images/%Y/%m")
+    height = models.PositiveIntegerField()
+    width = models.PositiveIntegerField()
+    data = models.ImageField(upload_to="images/%Y/%m", height_field="height", width_field="width")
 
 class Phrase(Submission):
     user = models.ForeignKey(get_user_model(), on_delete=models.SET_DEFAULT, default="[Deleted User]", related_name="phrases")

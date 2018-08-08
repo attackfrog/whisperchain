@@ -12,6 +12,7 @@ from .models import Chain, Picture, Phrase, CHAIN_CODE_LENGTH
 from .forms import LoginForm, SignupForm, ChainCodeForm, NewChainForm
 
 
+# Shows the home page to logged in users and a welcome page to logged out visitors
 def index(request):
     if not request.user.is_authenticated:
         return render(request, "web/welcome.html")
@@ -24,6 +25,7 @@ def index(request):
         return render(request, "web/main.html", context)
 
 
+# Displays a login form and handles login requests
 def login_view(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
@@ -42,12 +44,14 @@ def login_view(request):
         return render(request, "web/login.html", {"form": LoginForm()})
 
 
+# Handles logout requests
 def logout_view(request):
     logout(request)
     messages.add_message(request, messages.INFO, "You successfully logged out.")
     return HttpResponseRedirect(reverse("index"))
 
 
+# Displays a signup form and handles new user account requests
 def signup(request):
     if request.method == "POST":
         form = SignupForm(request.POST)
@@ -64,10 +68,12 @@ def signup(request):
         return render(request, "web/signup.html", {"form": SignupForm()})
 
 
+# Displays the user's profile
 def profile(request):
     return HttpResponse("User profile goes here.")
 
 
+# Displays a "whisper chain", as specified by the chain's ID code
 def chain(request, code):
     if not len(code) == CHAIN_CODE_LENGTH or not code.isalnum():
         messages.add_message(request, messages.WARNING, f"{code} is not a valid code.")
@@ -86,28 +92,52 @@ def chain(request, code):
     return render(request, "web/chain.html", context)
 
 
+# Handles form requests for a particular chain by redirecting to chain()
 def post_chain(request):
     if not request.method == "POST":
         return HttpResponseRedirect(reverse("index"))
     
-    return HttpResponseRedirect(f"chain/{request.POST['code']}")
+    return HttpResponseRedirect(reverse("chain", kwargs={"code": request.POST['code']}))
 
 
+# Displays a form to create a new "whisper chain" and handles requests to do the same
 def create(request):
     if request.method == "POST":
         form = NewChainForm(request.POST)
         if form.is_valid():
             name = request.POST["name"]
             maxUsers = request.POST["maxUsers"]
+            length = int(maxUsers) * 2
             isPublic = "isPublic" in request.POST and request.POST["isPublic"] == "on"
             code = blake2b(str.encode(name + datetime.now().isoformat()), digest_size=int(CHAIN_CODE_LENGTH/2)).hexdigest() # pylint: disable=unexpected-keyword-arg
-            chain = Chain(name=name, code=code, maxUsers=maxUsers, isPublic=isPublic)
+            chain = Chain(name=name, code=code, maxUsers=maxUsers, length=length, isPublic=isPublic)
             chain.save()
-            return HttpResponseRedirect(f"chain/{code}")
+            chain.users.add(User.objects.get(username=request.user.username)) # pylint: disable=no-member
+            return HttpResponseRedirect(reverse("chain", kwargs={"code": code}))
 
         else:
             return render(request, "web/create.html", {"form": form})
 
     else:
         return render(request, "web/create.html", {"form": NewChainForm()})
+
+
+# Handles user submissions of phrases and pictures to a particular chain
+def submit(request, chain_code):
+    if request.method == "POST":
+        user = User.objects.get(username=request.user.username)
+        chain = Chain.objects.get(code=chain_code) # pylint: disable=no-member
+
+        if "text" in request.POST:    
+            phrase = Phrase(user=user, chain=chain, position=chain.currentPosition, text=request.POST["text"])
+            phrase.save()
+            
+        elif "data" in request.POST:
+            picture = Picture(user=user, chain=chain, position=chain.currentPosition, data=request.POST["data"])
+            picture.save()
+
+        chain.currentPosition = chain.currentPosition + 1
+        chain.save()
     
+    else:
+        return HttpResponseRedirect(reverse("chain", kwargs={"code": chain_code}))

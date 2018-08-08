@@ -10,5 +10,6 @@ urlpatterns = [
     path("profile", views.profile, name="profile"),
     path("chain/<str:code>", views.chain, name="chain"),
     path("chain", views.post_chain, name="post_chain"),
-    path("create", views.create, name="create")
+    path("create", views.create, name="create"),
+    path("chain/<str:chain_code>/submit", views.submit, name="submit")
 ]
