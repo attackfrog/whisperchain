@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -69,9 +69,15 @@ def signup(request):
         return render(request, "web/signup.html", {"form": SignupForm()})
 
 
-# Displays the user's profile
-def profile(request):
-    return HttpResponse("User profile goes here.")
+# Displays a user's profile
+def profile(request, username):
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist: # pylint: disable=no-member
+        messages.add_message(request, messages.WARNING, f"There is no user by the username {username}.")
+        return HttpResponseRedirect(reverse("index"))
+
+    return render(request, "web/profile.html", {"user": user})
 
 
 # Displays a "whisper chain", as specified by the chain's ID code

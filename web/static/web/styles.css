@@ -1,3 +1,10 @@
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: -webkit-fill-available;
+}
+
 .bg-navbar {
     background-color: #2ce0b7;
 }
