@@ -33,7 +33,7 @@ def login_view(request):
         form = LoginForm(request.POST)
         # Use basic form validation and render validation errors if they occur
         if form.is_valid():
-            user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
+            user = authenticate(request, username=form.cleaned_data["username"], password=form.cleaned_data["password"])
             if user is not None:
                 login(request, user)
                 return HttpResponseRedirect(reverse("index"))
@@ -61,10 +61,10 @@ def signup(request):
         form = SignupForm(request.POST)
         # Validate using SignupForm's validation method, and pass any errors to the user. If there were none, create the account
         if form.is_valid():
-            user = User.objects.create_user(request.POST["username"], request.POST["email"], request.POST["password"])
+            user = User.objects.create_user(form.cleaned_data["username"], form.cleaned_data["email"], form.cleaned_data["password"])
             user.save()
             login(request, user)
-            messages.add_message(request, messages.SUCCESS, f"You successfully created your account. Welcome to Whisperchain, {request.POST['username']}!")
+            messages.add_message(request, messages.SUCCESS, f"You successfully created your account. Welcome to Whisperchain, {form.cleaned_data['username']}!")
             return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "web/signup.html", {"form": form})
@@ -158,10 +158,10 @@ def create(request):
     if request.method == "POST":
         form = NewChainForm(request.POST)
         if form.is_valid():
-            name = request.POST["name"]
-            maxUsers = request.POST["maxUsers"]
+            name = form.cleaned_data["name"]
+            maxUsers = form.cleaned_data["maxUsers"]
             length = int(maxUsers) * 2 # this could be customized later
-            isPublic = "isPublic" in request.POST and request.POST["isPublic"] == "on" # handle the way checkboxes are returned in request.POST
+            isPublic = form.cleaned_data["isPublic"]
             code = blake2b(str.encode(name + datetime.now().isoformat()), digest_size=int(CHAIN_CODE_LENGTH/2)).hexdigest() # pylint: disable=unexpected-keyword-arg
             chain = Chain(name=name, code=code, maxUsers=maxUsers, length=length, isPublic=isPublic)
             chain.save()
