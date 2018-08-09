@@ -78,6 +78,7 @@ WSGI_APPLICATION = 'whisperchain.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
+# This configuration is overwritten by django_heroku below
 
 DATABASES = {
     'default': {
@@ -91,7 +92,7 @@ DATABASES = {
 # https://docs.djangoproject.com/en/2.1/ref/models/fields/#django.db.models.FileField
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_AUTO_CREATE_BUCKET = True
@@ -102,6 +103,7 @@ S3_USE_SIGV4 = True
 
 MEDIA_ROOT = '/'
 MEDIA_URL = 'https://s3.us-east-2.amazonaws.com/whisperchain/images/'
+STATIC_ROOT = '/static/'
 
 
 # Password validation
