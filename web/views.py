@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.contrib import messages
 
+# Used for generating unique ID codes for chains
 from hashlib import blake2b
 from datetime import datetime
 
@@ -30,12 +31,14 @@ def index(request):
 def login_view(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
+        # Use basic form validation and render validation errors if they occur
         if form.is_valid():
             user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
             if user is not None:
                 login(request, user)
                 return HttpResponseRedirect(reverse("index"))
             else:
+                # If user info wasn't a match, inform the user with a notification message
                 messages.add_message(request, messages.ERROR, "The username and/or password you entered was invalid.")
                 return render(request, "web/login.html", {"form": form})
         else:
@@ -56,6 +59,7 @@ def logout_view(request):
 def signup(request):
     if request.method == "POST":
         form = SignupForm(request.POST)
+        # Validate using SignupForm's validation method, and pass any errors to the user. If there were none, create the account
         if form.is_valid():
             user = User.objects.create_user(request.POST["username"], request.POST["email"], request.POST["password"])
             user.save()
@@ -73,6 +77,7 @@ def signup(request):
 def profile(request, username):
     try:
         user = User.objects.get(username=username)
+    # If the specified username doesn't exist, notify the user with a message
     except User.DoesNotExist: # pylint: disable=no-member
         messages.add_message(request, messages.WARNING, f"There is no user by the username {username}.")
         return HttpResponseRedirect(reverse("index"))
@@ -82,16 +87,19 @@ def profile(request, username):
 
 # Displays a "whisper chain", as specified by the chain's ID code
 def chain(request, code):
+    # Do some simple validation on the code
     if not len(code) == CHAIN_CODE_LENGTH or not code.isalnum():
         messages.add_message(request, messages.WARNING, f"{code} is not a valid code.")
         return HttpResponseRedirect(reverse("index"))
     
+    # Get the specified chain from the database, if it exists
     try:
         chain = Chain.objects.get(code=code) # pylint: disable=no-member
     except Chain.DoesNotExist: # pylint: disable=no-member
         messages.add_message(request, messages.WARNING, f"There is no chain with the code {code}.")
         return HttpResponseRedirect(reverse("index"))
 
+    # If the chain still needs more users to start, display the formingchain.html template
     if chain.isOpen:
         form = ChainCodeForm(initial={"code": code})
         in_chain = request.user in chain.users.all()
@@ -105,9 +113,11 @@ def chain(request, code):
         }
         return render(request, "web/formingchain.html", context)
 
+    # Otherwise, if the chain is full, display the chain.html template
     else:
         pictures = chain.pictures.all()
         phrases = chain.phrases.all()
+        # Collate phrases and pictures to be displayed in the proper order in the template
         submissions = []
         for i in range(chain.currentPosition):
             if i % 2 == 0:
@@ -115,6 +125,7 @@ def chain(request, code):
             else:
                 submissions.append(pictures[int(i/2)])
 
+        # Provide the appropriate form, if it's the current user's turn to submit something
         active_user = nextPlayer(chain.currentPosition, chain.users.all())
         if active_user == request.user:
             if chain.currentPosition % 2 == 0:
@@ -149,8 +160,8 @@ def create(request):
         if form.is_valid():
             name = request.POST["name"]
             maxUsers = request.POST["maxUsers"]
-            length = int(maxUsers) * 2
-            isPublic = "isPublic" in request.POST and request.POST["isPublic"] == "on"
+            length = int(maxUsers) * 2 # this could be customized later
+            isPublic = "isPublic" in request.POST and request.POST["isPublic"] == "on" # handle the way checkboxes are returned in request.POST
             code = blake2b(str.encode(name + datetime.now().isoformat()), digest_size=int(CHAIN_CODE_LENGTH/2)).hexdigest() # pylint: disable=unexpected-keyword-arg
             chain = Chain(name=name, code=code, maxUsers=maxUsers, length=length, isPublic=isPublic)
             chain.save()
@@ -174,6 +185,7 @@ def join(request):
             messages.add_message(request, messages.WARNING, f"There is no chain with the code {form.code}.") # pylint: disable=no-member
             return HttpResponseRedirect(reverse("index"))
         
+        # Add the user to the chain, and close the chain if it's now got its maximum number of users
         chain.users.add(User.objects.get(username=request.user.username)) # pylint: disable=no-member
         if chain.users.all().count() >= chain.maxUsers:
             chain.isOpen = False
@@ -191,6 +203,7 @@ def submit(request, chain_code):
         user = User.objects.get(username=request.user.username)
         chain = Chain.objects.get(code=chain_code) # pylint: disable=no-member
 
+        # Determine if the submission is a picture or a phrase
         if "text" in request.POST:
             phrase = Phrase(user=user, chain=chain, position=chain.currentPosition, text=request.POST["text"])
             phrase.save()
@@ -199,6 +212,7 @@ def submit(request, chain_code):
             picture = Picture(user=user, chain=chain, position=chain.currentPosition, data=request.FILES["data"])
             picture.save()
 
+        # Increment the chain's current position, and deactivate it (mark it finished) if it has the full number of submissions
         chain.currentPosition += 1
         if chain.currentPosition >= chain.length:
             chain.isActive = False

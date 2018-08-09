@@ -9,6 +9,10 @@ body {
     background-color: #2ce0b7;
 }
 
+.app-icon {
+    margin-right: 0.3rem;
+}
+
 .alert {
     margin-top: 1rem;
 }
