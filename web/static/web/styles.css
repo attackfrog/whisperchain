@@ -23,6 +23,23 @@ main {
     font-size: 0.9rem;
 }
 
+.page-footer {
+    background-color: #bdbdbd;
+    margin: 5rem 0 0;
+    padding: 3rem;
+}
+
+.page-footer ul {
+    list-style: none;
+}
+
+.page-footer a:link {
+    color: #ffffff;
+}
+.page-footer a:visited {
+    color: #eeeeee;
+}
+
 /* Logged in main page stuff */
 
 .section-header {
@@ -57,6 +74,25 @@ main {
 }
 
 /* Chain page stuff */
+
+.chain-heading {
+    margin-bottom: 2rem;
+}
+
+.chain-heading .lead {
+    padding-left: 2rem;
+}
+
+.join-chain-btn {
+    width: 50%!important;
+    margin: 2rem auto 0;
+}
+
+.code-display {
+    font-weight: bold;
+    font-size: 2rem;
+    padding-left: 0.5rem;
+}
 
 .chain-progress-box {
     padding: 1rem 2rem 2rem;

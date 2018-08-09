@@ -38,7 +38,7 @@ Play Telephone Online!
                 <div class="chains-box">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">{{ chain.name }} <a href="#" class="btn btn-outline-primary float-right view-chain-button">View Chain</a></h5>
+                            <h5 class="card-title">{{ chain.name }} <a href="{% url 'chain' code=chain.code %}" class="btn btn-outline-primary float-right view-chain-button">View Chain</a></h5>
                             <h6 class="card-subtitle mb-2 text-muted">
                                 {% for user in chain.users.all %}
                                 {{ user }}{% if not forloop.last %}, {% endif %}
@@ -100,7 +100,7 @@ Play Telephone Online!
                 <div class="chains-box">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">{{ chain.name }} <a href="#" class="btn btn-outline-primary float-right view-chain-button">Join Chain</a></h5>
+                            <h5 class="card-title">{{ chain.name }} <a href="{% url 'chain' code=chain.code %}" class="btn btn-outline-primary float-right view-chain-button">Join Chain</a></h5>
                             <h6 class="card-subtitle mb-2 text-muted">
                                 {% for user in chain.users.all %}
                                 {{ user }}{% if not forloop.last %}, {% endif %}

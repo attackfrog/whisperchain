@@ -20,7 +20,7 @@ def index(request):
     else:
         context = {
             "form": ChainCodeForm(),
-            "user_chains": Chain.objects.filter(users__username=request.user.username), # pylint: disable=no-member
+            "user_chains": Chain.objects.filter(users__username=request.user.username).filter(isActive=True), # pylint: disable=no-member
             "public_chains": Chain.objects.filter(isPublic=True).filter(isOpen=True) # pylint: disable=no-member
         }
         return render(request, "web/main.html", context)
@@ -86,27 +86,46 @@ def chain(request, code):
         messages.add_message(request, messages.WARNING, f"There is no chain with the code {code}.")
         return HttpResponseRedirect(reverse("index"))
 
-    pictures = chain.pictures.all()
-    phrases = chain.phrases.all()
-    submissions = []
-    for i in range(chain.currentPosition):
-        if i % 2 == 0:
-            submissions.append(phrases[int(i/2)])
-        else:
-            submissions.append(pictures[int(i/2)])
+    if chain.isOpen:
+        form = ChainCodeForm(initial={"code": code})
+        in_chain = request.user in chain.users.all()
+        chain_uri = request.build_absolute_uri(reverse("chain", kwargs={"code": code}))
+        context = {
+            "logged_in": request.user.is_authenticated,
+            "chain": chain,
+            "form": form,
+            "in_chain": in_chain,
+            "chain_uri": chain_uri
+        }
+        return render(request, "web/formingchain.html", context)
 
-    if chain.currentPosition % 2 == 0:
-        form = SubmitPhraseForm()
     else:
-        form = SubmitPictureForm()
+        pictures = chain.pictures.all()
+        phrases = chain.phrases.all()
+        submissions = []
+        for i in range(chain.currentPosition):
+            if i % 2 == 0:
+                submissions.append(phrases[int(i/2)])
+            else:
+                submissions.append(pictures[int(i/2)])
 
-    context = {
-        "chain": chain,
-        "submissions": submissions,
-        "logged_in": request.user.is_authenticated,
-        "form": form,
-    }
-    return render(request, "web/chain.html", context)
+        active_user = nextPlayer(chain.currentPosition, chain.users.all())
+        if active_user == request.user:
+            if chain.currentPosition % 2 == 0:
+                form = SubmitPhraseForm()
+            else:
+                form = SubmitPictureForm()
+        else:
+            form = False
+
+        context = {
+            "chain": chain,
+            "submissions": submissions,
+            "logged_in": request.user.is_authenticated,
+            "form": form,
+            "active_user": active_user,
+        }
+        return render(request, "web/chain.html", context)
 
 
 # Handles form requests for a particular chain by redirecting to chain()
@@ -139,6 +158,27 @@ def create(request):
         return render(request, "web/create.html", {"form": NewChainForm()})
 
 
+# Adds the user to a specified chain
+def join(request):
+    if request.method == "POST":
+        # Took out form validation here because it wasn't recognizing the code member for some reason
+        try:
+            chain = Chain.objects.get(code=request.POST["code"]) # pylint: disable=no-member
+        except Chain.DoesNotExist: # pylint: disable=no-member
+            messages.add_message(request, messages.WARNING, f"There is no chain with the code {form.code}.") # pylint: disable=no-member
+            return HttpResponseRedirect(reverse("index"))
+        
+        chain.users.add(User.objects.get(username=request.user.username)) # pylint: disable=no-member
+        if chain.users.all().count() >= chain.maxUsers:
+            chain.isOpen = False
+        chain.save()
+
+        return HttpResponseRedirect(reverse("chain", kwargs={"code": request.POST["code"]}))
+    
+    else:
+        return HttpResponseRedirect(reverse("index"))
+
+
 # Handles user submissions of phrases and pictures to a particular chain
 def submit(request, chain_code):
     if request.method == "POST":
@@ -154,6 +194,8 @@ def submit(request, chain_code):
             picture.save()
 
         chain.currentPosition += 1
+        if chain.currentPosition >= chain.length:
+            chain.isActive = False
         chain.save()
     
     return HttpResponseRedirect(reverse("chain", kwargs={"code": chain_code}))

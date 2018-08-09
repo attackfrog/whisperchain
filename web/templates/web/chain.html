@@ -41,8 +41,15 @@
 
 {% block main %}
 <div class="container">
-    <h1>{{ chain.name }}</h1>
-    {% if chain.currentPosition < chain.length %}
+    <div class="col-12 chain-heading">
+        <h1 class="display-3">{{ chain.name }}</h1>
+        <p class="lead">Featuring: 
+            {% for user in chain.users.all %}
+            {{ user }}{% if forloop.revcounter == 2 %} and {% elif not forloop.last %}, {% endif %}
+            {% endfor %}
+        </p>
+    </div>
+    {% if chain.isActive %}
     <div class="chain-progress-box">
         <div class="progress chain-progress">
             <div class="progress-bar" role="progressbar" style="width: {{ chain.currentPosition|div:chain.length|mul:100 }}%;" aria-valuenow="{{ chain.currentPosition }}" 
@@ -72,6 +79,7 @@
     {% endif %}
     <div class="connector"></div>
     {% endfor %}
+    {% if form %}
     <div class="card shadow submit-card">
         <div class="card-body">
             {% if chain.currentPosition|divisibleby:2 %}
@@ -107,5 +115,18 @@
             {% endif %}
         </div>
     </div>
+    {% elif chain.isActive %}
+    <div class="card shadow submit-card">
+        <div class="card-body">
+            <p>It's currently {{ active_user }}'s turn.</p>
+        </div>
+    </div>
+    {% else %}
+    <div class="card shadow submit-card">
+        <div class="card-body">
+            <p class="text-center lead">The chain is complete!</p>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

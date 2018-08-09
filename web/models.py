@@ -11,6 +11,7 @@ class Chain(models.Model):
     users = models.ManyToManyField(get_user_model(), related_name="chains")
     maxUsers = models.IntegerField(verbose_name="Maximum Users in Chain")
     isOpen = models.BooleanField(default=True)
+    isActive = models.BooleanField(default=True)
     length = models.IntegerField(default=2)
     currentPosition = models.IntegerField(default=0)
     isPublic = models.BooleanField(verbose_name="Make Chain Public")
