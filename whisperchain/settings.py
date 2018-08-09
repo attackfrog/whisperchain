@@ -104,6 +104,7 @@ S3_USE_SIGV4 = True
 MEDIA_ROOT = '/'
 MEDIA_URL = 'https://s3.us-east-2.amazonaws.com/whisperchain/images/'
 STATIC_ROOT = '/static/'
+STATIC_URL = 'https://s3.us-east-2.amazonaws.com/whisperchain/static/'
 
 
 # Password validation
