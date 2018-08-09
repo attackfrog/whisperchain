@@ -1,4 +1,5 @@
 {% extends "web/base.html" %}
+{% load static %}
 
 {% block title %}
 {{ chain.name }}
@@ -62,14 +63,26 @@
     <div class="card shadow phrase-card">
         <div class="card-body">
             <blockquote class="blockquote">
-                <p>{{ submission.text }}</p>
+                <p>
+                    {% if chain.isActive %}
+                        {% for i in "12345" %}
+                        <span class="placeholder ph1"></span><span class="placeholder ph2"></span><span class="placeholder ph3"></span>
+                        {% endfor %}
+                    {% else %}
+                    {{ submission.text }}
+                    {% endif %}
+                </p>
                 <footer class="blockquote-footer">{{ submission.user }}</footer>
             </blockquote>
         </div>
     </div>
     {% else %}
     <div class="card shadow picture-card" style="max-width: {{ submission.data.width }}px;">
+        {% if chain.isActive %}
+        <img class="card-img-top" src="{% static 'web/placeholder.png' %}" alt="{{ submission.user }}'s Picture" />
+        {% else %}
         <img class="card-img-top" src="{{ submission.data.url }}" alt="{{ submission.user }}'s Picture" />
+        {% endif %}
         <div class="card-body">
             <blockquote class="blockquote">
                 <footer class="blockquote-footer">{{ submission.user }} on {{ submission.timestamp }}</footer>

@@ -83,7 +83,7 @@ main {
 /* Chain page stuff */
 
 .chain-heading {
-    margin-bottom: 2rem;
+    margin: 1rem 0;
 }
 
 .chain-heading .lead {
@@ -130,4 +130,29 @@ main {
 .phrase-input {
     font-size: 1.25rem;
     height: 5rem!important;
+}
+
+.placeholder {
+    background-color: grey;
+    height: 1.25rem;
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+.ph1 {
+    width: 5rem;
+}
+
+.ph2 {
+    width: 7rem;
+}
+
+.ph3 {
+    width: 3rem;
+}
+
+.placeholder-image {
+    background-color: grey;
+    max-width: 100%;
+    max-height: auto;
 }
