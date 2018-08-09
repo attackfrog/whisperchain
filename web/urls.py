@@ -12,5 +12,6 @@ urlpatterns = [
     path("chain", views.post_chain, name="post_chain"),
     path("create", views.create, name="create"),
     path("join", views.join, name="join"),
-    path("chain/<str:chain_code>/submit", views.submit, name="submit")
+    path("chain/<str:chain_code>/submit", views.submit, name="submit"),
+    path("credits", views.credits, name="credits"),
 ]

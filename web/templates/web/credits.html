@@ -1,1 +1,53 @@
-<div>Favicon made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+{% extends "web/base.html" %}
+
+{% block title %}
+Credits
+{% endblock %}
+
+{% block nav %}
+<ul class="navbar-nav">
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'index' %}">Home</a>
+    </li>
+    {% if logged_in %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'create' %}">Create New Chain</a>
+    </li>
+    {% endif %}
+</ul>
+{% if logged_in %}
+<ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'profile' username=request.user %}">Profile</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+    </li>
+</ul>
+{% else %}
+<ul class="navbar-nav ml-auto">
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'login' %}">Log In</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+    </li>
+</ul>
+{% endif %}
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+            <h3 class="credits-header">Thanks to these groups for making Whisperchain possible!</h3>
+            <ul>
+                <li>Whisperchain was developed by <a href="https://github.com/attackfrog" title="attackfrog's GitHub page">attackfrog</a>.</li>
+                <li>This was a final project for Harvard's <a href="https://cs50.github.io/web/" title="CS-33a's course website">CS-33a Web Programming with Python and JavaScript</a> course.</li>
+                <li>Favicon made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

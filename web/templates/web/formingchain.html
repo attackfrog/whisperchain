@@ -64,12 +64,14 @@
                     {% if in_chain %}
                     <p>Share this code with others to invite them to join this chain: <span class="code-display">{{ chain.code }}</span></p>
                     <p>Or give them the url to this page: <a href="{{ chain_uri }}">{{ chain_uri }}</a></p>
-                    {% else %}
+                    {% elif logged_in %}
                     <form action="{% url 'join' %}" method="POST">
                         {% csrf_token %}
                         {{ form.code.as_hidden }}
                         <input type="submit" class="btn btn-primary btn-block join-chain-btn" value="Join Chain" />
                     </form>
+                    {% else %}
+                    <p><a href="{% url 'signup' %}">Sign up</a> or <a href="{% url 'login' %}">Log In</a> to join this chain.</p>
                     {% endif %}
                 </div>
             </div>

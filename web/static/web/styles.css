@@ -156,3 +156,9 @@ main {
     max-width: 100%;
     max-height: auto;
 }
+
+/* Credits styling */
+
+.credits-header {
+    margin: 3rem 0 2rem;
+}

@@ -205,3 +205,8 @@ def submit(request, chain_code):
         chain.save()
     
     return HttpResponseRedirect(reverse("chain", kwargs={"code": chain_code}))
+
+
+# Displays a credits page
+def credits(request):
+    return render(request, "web/credits.html", {"logged_in": request.user.is_authenticated})
